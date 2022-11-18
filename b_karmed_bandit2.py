@@ -41,6 +41,7 @@ class Environment:
         return self.steps_left == 0
 
     def action(self, action: int) -> float:
+        
         if self.is_done():
             raise Exception("Game is over")
         else:
@@ -66,9 +67,12 @@ class Agent:
         self.total_reward = 0.0
         self.ep=0.10
 
+
     def step(self, env: Environment):
         current_obs = env.get_observation()
         actions = env.get_actions(self)
+        
+        
         reward = env.action(actions)
         self.total_reward += reward
 
@@ -84,7 +88,8 @@ if __name__ == "__main__":
     print("Total reward got: %.4f" % agent.total_reward)
     print("EL resumen de recompensa promedio por accción es: \n\n" , env.df)
 
+env.df
 
-
+env.get_observation()
 
 
