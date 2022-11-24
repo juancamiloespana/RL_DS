@@ -45,7 +45,7 @@ class Agent:
     # Metodo para hacer un episodio
     def iterate_batches(self, env, net):
         
-        self.batch = [] # Lista que guarda instancias de Episode ( reward y steps)
+        batch = [] # Lista que guarda instancias de Episode ( reward y steps)
         self.episode_reward = 0.0 # Se inicializa la recompensa
         self.episode_steps = [] # Lista que guarda instancias de EpisodeStep (observación y acción)
         self.obs = env.reset() # Se genera una observación nueva
@@ -75,7 +75,7 @@ class Agent:
             
             if self.is_done:               
                 self.e = Episode(reward=self.episode_reward, steps=self.episode_steps)
-                self.batch.append(self.e)
+                batch.append(self.e)
                 self.episode_reward = 0.0
                 self.episode_steps = []
                 self.next_obs = env.reset()
@@ -83,9 +83,9 @@ class Agent:
                 #print("lenght batch", len(self.batch))
                 #print("batch size ", self.batch_size)
                 
-                if len(self.batch) == self.batch_size:
-                    yield self.batch
-                    self.batch = []
+                if len(batch) == self.batch_size:
+                    yield batch
+                    batch = []
             self.obs = self.next_obs
             i+=1
     
@@ -116,8 +116,8 @@ class Agent:
 
         for iter_no, batch in enumerate(self.iterate_batches(env, net)):
         
-            self.obs_v, self.acts_v, self.reward_b, self.reward_m = \
-                self.filter_batch(batch, self.percentile)
+            self.obs_v, self.acts_v, self.reward_b, self.reward_m, *_= \
+                self.filter_batch(batch)
             self.optimizer.zero_grad()
             self.action_scores_v = net(self.obs_v)
             self.loss_v = self.objective(self.action_scores_v, self.acts_v)
@@ -274,6 +274,10 @@ if __name__ == "__main__":
     env = Environment(P, Lim, n_actions, BATCH_SIZE)
     net = Net(env.obs_size, HIDDEN_SIZE, n_actions)
     agent = Agent(HIDDEN_SIZE,BATCH_SIZE,PERCENTILE)
+    
+
 
     agent.crossentropy(env, net)
+    
+
     
