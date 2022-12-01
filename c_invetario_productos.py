@@ -1,3 +1,4 @@
+
 import numpy as np
 import gym
 from gym import spaces
@@ -11,7 +12,6 @@ import pandas as pd
 
 
 ### para red neuronal
-
 
 import torch
 from torch import nn
@@ -43,9 +43,8 @@ class inventario (gym.Env):
         param['max_cedi']=param['cap_cedi']*2 ## un valor máximo que podría tomar la variable de inventario (se puede pasar de cap)
         param['max_be']=param['cap_cedi']*10 ## un valor máximo que podría tomar la variable de inventario (se puede pasar de cap)
 
-        
-        self.steps=steps
-       
+        self.steps_ini=steps
+            
         
         self.action_space=spaces.Dict({
             'tras_be_r':Discrete(param['max_tras'], start=1),\
@@ -75,9 +74,9 @@ class inventario (gym.Env):
         
         self.resultados=pd.DataFrame()
         prod_r=self.np_random.integers(self.param['min_prod_r'], self.param['max_prod_r'],size=1,dtype=int)[0]
-        prod_n = self.np_random.integers(self.param['min_prod_n'], self.param['max_prod_n'],size=1,dtype=int)[0]
+        prod_n = 0
         dem_r= self.np_random.integers(self.param['dem_min_r'], self.param['dem_max_r'],size=1,dtype=int)[0]
-        dem_n= self.np_random.integers(self.param['dem_min_n'],self. param['dem_max_n'],size=1,dtype=int)[0]
+        dem_n= 0
         self.fecha=datetime.datetime(2022,1,1)
         
         observation={
@@ -95,7 +94,8 @@ class inventario (gym.Env):
         
         self.observation=observation
         
-        
+        self.terminated=False
+        self.steps=self.steps_ini
         return observation
     
     def step(self, action):
@@ -103,7 +103,7 @@ class inventario (gym.Env):
         self.steps-=1
         
         
-        terminated= self.steps<=0
+        self.terminated= self.steps<=0
         
         observation={}
         
@@ -188,7 +188,7 @@ class inventario (gym.Env):
         ### faltan costos de transporte y de demanda insatisfecha ### 
         
          
-        return observation, reward, terminated, self.resultados
+        return observation, reward, self.terminated, self.resultados
                
 
 
@@ -228,6 +228,7 @@ def iterate_batches(env, net, batch_size):
     while True:
         #print(n)
         #n+=1
+
         obs_v = torch.FloatTensor([obs])
         action_np = net(obs_v)
         action_np=action_np.data.numpy()[0]
@@ -249,6 +250,13 @@ def iterate_batches(env, net, batch_size):
        
         step = EpisodeStep(observation=obs, action=action_np)
         episode_steps.append(step)
+        #print(is_done)
+        #print(env.terminated)
+        
+        #print(env.fecha)
+        #print(env.steps)
+        #print(e_count)
+        #print(env.terminated)
         if is_done:
             e_count+=1
             e = Episode(reward=episode_reward, steps=episode_steps, resultados=resultados_ep)
@@ -256,8 +264,10 @@ def iterate_batches(env, net, batch_size):
             episode_reward = 0.0
             episode_steps = []
             next_obs = env.reset()
+            resultados_ep=pd.DataFrame()
             if len(batch) == batch_size:
                 yield batch  ## función generador, es como return, pero solo se puede usar una vez
+                e_count=1
                 batch = []
         obs1 = next_obs
         obs1=obs1.values()
@@ -293,7 +303,7 @@ def filter_batch(batch, percentile):
 if __name__ == "__main__":
     
     HIDDEN_SIZE = 128
-    BATCH_SIZE = 16
+    BATCH_SIZE = 20
     PERCENTILE = 70
     
     env = inventario()
@@ -323,19 +333,27 @@ if __name__ == "__main__":
         #writer.add_scalar("loss", loss_v.item(), iter_no)
         #writer.add_scalar("reward_bound", reward_b, iter_no)
         #writer.add_scalar("reward_mean", reward_m, iter_no)
-        if iter_no > 20:
+        if iter_no > 4:
             print("Solved!")
             break
     #writer.close()
     
 resultados=pd.DataFrame(columns=env.observation.keys())
+resultados['batche'].max()
+pd.set_option('display.max_rows',None)
+resultados.head(400)
+resultados.tail(400)
+resultados.shape
 
-env.
+env.terminated=True
 
 env= inventario()
 len(obs_v)
 
+next_obs, reward, is_done, resultados_step = env.step(action)
 
+env.step(action)
+prueba=env.reset()
 import openpyxl
 
 resultados.to_excel('resultados.xlsx')
@@ -345,6 +363,12 @@ resultados.info()
 
 resultados.iloc[-1]=pd.DataFrame(list(env.observation.values()))
 env.reset()
+
+env.fecha
+
+del resultados
+
+env.steps
 env.observation.keys()
 env.step(action) 
 
