@@ -13,16 +13,18 @@ class env_inventario (gym.Env):
         param={
         'max_tras':2000, ## máximo de pallet que se pueden trasladar
         'cap_cedi' :30000, ## definida en modelo
-        'max_prod_r': 15000,
-        'min_prod_r': 14000,
-        'max_prod_n' : 20000,
-        'min_prod_n': 15000,
+        'max_prod_r': 1500,
+        'min_prod_r': 1400,
+        'max_prod_n' : 2000,
+        'min_prod_n': 1500,
         'dem_max_r':1500,
         'dem_min_r':1400,
         'dem_max_n':3000,
         'dem_min_n':150,
         'cost_be':1000,
-        'penalidad_exceso':3500},
+        'costo_tras':50,
+        'costo_vp':2000,
+        'penalidad_exceso':4000},
         steps=365         
     ):
         
@@ -91,8 +93,24 @@ class env_inventario (gym.Env):
     
     def step(self, action):
         
-        self.steps-=1
-        self.terminated= self.steps<=0
+        ###calculo reward antes de paso ##
+
+               
+        costo_be= np.max([self.param['cost_be'] * self.observation['ocup_be'] , self.observation['ocup_be']*self.penalizacion*-1])
+        costo_exceso=self.observation['exc_cedi']*self.param['penalidad_exceso']
+        
+        tot_tras= action['tras_be_r']+action['tras_be_n']
+        costo_tras=tot_tras*self.param['costo_tras']
+        
+        vp=self.observation['dem_r']+self.observation['dem_n']-action['desp_r']-action['desp_be_r'] -action['desp_n'] -action['desp_be_n']
+        costo_vp=vp*self.param['costo_vp']
+        #print('tot_tras:', tot_tras, 'costo_be:', costo_be, 'costo_exceso:',costo_exceso, 'costo_tras:', costo_tras,
+         #    'costo_cedi:', costo_cedi)
+        reward= costo_be+costo_exceso +costo_tras+costo_vp
+        
+        
+       
+  
         
         observation={}
         
@@ -109,7 +127,7 @@ class env_inventario (gym.Env):
             - action['desp_be_n']
             
         observation['prod_r'] = self.np_random.integers(self.param['min_prod_r'], self.param['max_prod_r'],size=1,dtype=int)[0]
-        if self.fecha.month>= 11:
+        if self.fecha.month>= 10:
             observation['prod_n'] = self.np_random.integers(self.param['min_prod_n'], self.param['max_prod_n'],size=1,dtype=int)[0]
         else:
             observation['prod_n'] = 0
@@ -121,28 +139,12 @@ class env_inventario (gym.Env):
         else:
             observation['dem_n'] = 0
             
-        self.fecha+=datetime.timedelta(days=1)
-        
-###calculo reward ##
-
-        ocup_cedi= observation['cedi_level_r'] +observation['cedi_level_n']  
+        ocup_cedi= observation['cedi_level_r'] + observation['cedi_level_n']  
         exceso=ocup_cedi -self.param['cap_cedi']
         observation['exc_cedi']  = np.max([0, exceso])
         observation['ocup_be'] = observation['be_level_r'] +observation['be_level_n']
         
-        costo_be= np.max([self.param['cost_be'] * observation['ocup_be'] , observation['ocup_be']*self.penalizacion*-1])
-        costo_exceso=observation['exc_cedi']*self.param['penalidad_exceso']
-        
-        tot_tras= sum(action.values())
-        costo_tras=np.max([tot_tras - self.param['max_tras'],0])*self.penalizacion
-        costo_cedi=np.max([0, ocup_cedi*-self.penalizacion] )
-        
-        #print('tot_tras:', tot_tras, 'costo_be:', costo_be, 'costo_exceso:',costo_exceso, 'costo_tras:', costo_tras,
-         #    'costo_cedi:', costo_cedi)
-        reward= costo_be+costo_exceso +costo_tras+costo_cedi
-        
-        
-        self.observation=observation
+
         #### tabla de resultados ######
 
         
@@ -172,10 +174,15 @@ class env_inventario (gym.Env):
         self.resultados['tot_tras']=tot_tras
         self.resultados['tot_tras']=tot_tras
         self.resultados['tot_tras']=tot_tras
-        self.resultados['costo_cedi']=costo_cedi
+        self.resultados['costo_vp']=costo_vp
         self.resultados['reward']=reward
         ### faltan costos de transporte y de demanda insatisfecha ### 
         
+        self.steps-=1
+        self.terminated= self.steps<=0
+        self.fecha+=datetime.timedelta(days=1)
+        
+        self.observation=observation
          
         return observation, reward, self.terminated, self.resultados
                

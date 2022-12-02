@@ -1,6 +1,7 @@
 import numpy as np
 from collections import namedtuple
 import pandas as pd
+import torch
 
  
 
@@ -55,7 +56,7 @@ class RL_CE:
 
 
 
-    def filter_batch(batch, percentile):
+    def filter_batch(self, batch, percentile):
         rewards = list(map(lambda s: s.reward, batch))
         reward_bound = np.percentile(rewards, percentile)
         reward_mean = float(np.mean(rewards))
@@ -83,22 +84,33 @@ class RL_CE:
     def run_CE(self, BATCH_SIZE = 20, PERCENTILE = 70, iter_tot=4 ):
            
         
-        resultados=pd.DataFrame()
+        self.resultados=pd.DataFrame()
         
         for iter_no, batch in enumerate(self.iterate_batches(BATCH_SIZE)):
-            
+            print(iter_no)
             obs_train, action_train, reward_b, reward_m, resultados_bat = \
-                filter_batch(batch, PERCENTILE)
+                self.filter_batch(batch, PERCENTILE)
                 
             resultados_bat['batche']=iter_no
-            resultados=pd.concat([resultados,resultados_bat])
+            self.resultados=pd.concat([self.resultados,resultados_bat])
             
             loss_v=self.agente.learn(action_train, obs_train)
         
             print("%d: loss=%.3f, reward_mean=%.1f, rw_bound=%.1f" % (
                 iter_no, loss_v.item(), reward_m/1000000, reward_b))
+            
             if iter_no >= iter_tot:
                 print("Solved!")
                 break
+            
+            
+        
+        
+        
+        
+        
+        
+        
+
 
         

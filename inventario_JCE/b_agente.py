@@ -60,10 +60,42 @@ class Agente:
         obs_np, action_dict=self.get_action()
         obs_dict=self.env.observation
         
-        if action_dict['desp_r']>=obs_dict['cedi_level_r']:
+        
+        
+        if (action_dict['desp_r'] + action_dict['desp_be_r'])< obs_dict['dem_r']:
+            
+            total_desp= action_dict['desp_r'] + action_dict['desp_be_r']
+            if total_desp!=0:
+                prop_cedi= action_dict['desp_r']/total_desp
+                prop_be= 1-prop_cedi
+            else:
+                prop_cedi=1
+                prop_be=0
+                
+            action_dict['desp_r'] = obs_dict['dem_r']*prop_cedi
+            action_dict['desp_be_r'] = obs_dict['dem_r']*prop_be
+             
+            
+                
+        if (action_dict['desp_n'] + action_dict['desp_be_n'])< obs_dict['dem_n']:
+            total_desp= action_dict['desp_n'] + action_dict['desp_be_n']
+            
+            if total_desp!=0:
+                prop_cedi= action_dict['desp_n']/total_desp
+                prop_be= 1-prop_cedi
+            else:
+                prop_cedi=1
+                prop_be=0
+                
+            action_dict['desp_n'] = obs_dict['dem_n']*prop_cedi
+            action_dict['desp_be_n'] = obs_dict['dem_n']*prop_be
+            
+
+        
+        if action_dict['desp_r']>obs_dict['cedi_level_r']:
             action_dict['desp_r'] = obs_dict['cedi_level_r']
         
-        if  action_dict['tras_be_r'] >= obs_dict['cedi_level_r'] - action_dict['desp_r']:
+        if  action_dict['tras_be_r'] > obs_dict['cedi_level_r'] - action_dict['desp_r']:
             action_dict['tras_be_r']= obs_dict['cedi_level_r'] -action_dict['desp_r']
             
         if action_dict['desp_n']>=obs_dict['cedi_level_n']:
@@ -72,13 +104,13 @@ class Agente:
         if  action_dict['tras_be_n'] >= obs_dict['cedi_level_n'] -action_dict['desp_n']:
             action_dict['tras_be_n']= obs_dict['cedi_level_n'] -action_dict['desp_n']
         
-        if action_dict['desp_be_r']>=obs_dict['be_level_r']:
+        if action_dict['desp_be_r']>obs_dict['be_level_r']:
             action_dict['desp_be_r'] = obs_dict['be_level_r']
                 
-        if action_dict['desp_be_n']>=obs_dict['be_level_n']:
+        if action_dict['desp_be_n']>obs_dict['be_level_n']:
             action_dict['desp_be_n'] = obs_dict['be_level_n']
         
-        if action_dict['desp_r'] + action_dict['desp_be_r']> obs_dict['dem_r']:
+        if (action_dict['desp_r'] + action_dict['desp_be_r'])> obs_dict['dem_r']:
         
             total_desp= action_dict['desp_r'] + action_dict['desp_be_r']
             prop_cedi= action_dict['desp_r']/total_desp
@@ -87,12 +119,19 @@ class Agente:
             action_dict['desp_be_r'] = obs_dict['dem_r']*prop_be
             
         if action_dict['desp_n'] + action_dict['desp_be_n']> obs_dict['dem_n']:
-            print(action_dict['desp_n'], action_dict['desp_be_n'])
             total_desp= action_dict['desp_n'] + action_dict['desp_be_n']
             prop_cedi= action_dict['desp_n']/total_desp
             prop_be= 1-prop_cedi
             action_dict['desp_n'] = obs_dict['dem_n']*prop_cedi
             action_dict['desp_be_n'] = obs_dict['dem_n']*prop_be
+            
+        if action_dict['tras_be_r'] + action_dict['tras_be_n']> self.env.param['max_tras']:
+            
+            total_tras= action_dict['tras_be_r'] + action_dict['tras_be_n']
+            prop_r= action_dict['tras_be_r']/ total_tras
+            prop_n= 1-prop_r
+            action_dict['tras_be_r'] = self.env.param['max_tras']*prop_r
+            action_dict['tras_be_n'] = self.env.param['max_tras']*prop_n
             
         
         action_dict_values=action_dict.values()
@@ -107,13 +146,14 @@ class Agente:
         
     def learn(self, action_train, obs_train):
         
-        env=self.env
-                
+                      
         action_pred_tensor=self.net(obs_train)
         self.optimizer.zero_grad()
         loss_v = self.objective(action_pred_tensor, action_train)
         loss_v.backward()
         self.optimizer.step()
+        
+        return (loss_v)
         
     
         
