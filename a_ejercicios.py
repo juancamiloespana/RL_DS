@@ -72,6 +72,7 @@ fig.show()
 fig=px.bar(data_frame=df, y='Q',x='A', color="N", title="Frecuencia de acciones y su valores")
 fig.show()
 
+#final
 
 
 
