@@ -82,3 +82,5 @@ x = list(range(0,Runs+1))
 plt.plot(x, y)
 # function to show the plot
 plt.show()
+
+# Que codigo tan limpio :)
