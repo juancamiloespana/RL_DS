@@ -1,10 +1,10 @@
 import numpy as np
 import datetime
 import pandas as pd
-import gym
-from gym import spaces
-from gym.spaces import Discrete
-from gym.spaces import MultiDiscrete
+import gymnasium as gym
+from gymnasium import spaces
+from gymnasium.spaces import Discrete
+from gymnasium.spaces import MultiDiscrete
 
 
 class env_inventario (gym.Env): 

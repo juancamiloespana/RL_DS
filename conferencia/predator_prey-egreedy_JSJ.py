@@ -1,5 +1,5 @@
 # Se importa el modelo de Lotka Volterra
-from LotkaVolterra import LotkaVolterraModel
+from LotkaVolterra_JSJ import LotkaVolterraModel
 # Importar librería para la media
 from tkinter import Y
 # Se importa paquete matematico numpy

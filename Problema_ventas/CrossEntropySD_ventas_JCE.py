@@ -1,8 +1,8 @@
 # Paquetes 
-import gym
+import gymnasium as gym
 from collections import namedtuple
 import numpy as np
-from tensorboardX import SummaryWriter
+#from tensorboardX import SummaryWriter
 
 import torch
 import torch.nn as nn
@@ -112,7 +112,7 @@ class Agent:
         
         self.objective = nn.CrossEntropyLoss()
         self.optimizer = optim.Adam(params=net.parameters(), lr=0.01)
-        self.writer = SummaryWriter(comment="-SystemDynamics")
+        #self.writer = SummaryWriter(comment="-SystemDynamics")
 
         for iter_no, batch in enumerate(self.iterate_batches(env, net)):
         
@@ -125,9 +125,9 @@ class Agent:
             self.optimizer.step()
             print("%d: loss=%.3f, reward_mean=%.1f, rw_bound=%.1f" % (
                 iter_no, self.loss_v.item(), self.reward_m, self.reward_b))
-            self.writer.add_scalar("loss", self.loss_v.item(), iter_no)
-            self.writer.add_scalar("reward_bound", self.reward_b, iter_no)
-            self.writer.add_scalar("reward_mean", self.reward_m, iter_no)
+            #self.writer.add_scalar("loss", self.loss_v.item(), iter_no)
+            #self.writer.add_scalar("reward_bound", self.reward_b, iter_no)
+            #self.writer.add_scalar("reward_mean", self.reward_m, iter_no)
             if self.reward_m > 1085:
                 print("Solved!")
                 break
