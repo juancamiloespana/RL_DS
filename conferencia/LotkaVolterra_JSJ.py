@@ -38,7 +38,7 @@ class LotkaVolterraModel:
             self.R.append(rabbits)
             self.W.append(wolves)
 
-        return np.mean(self.L)
+        return np.mean(self.L),  np.mean(self.R)
     
     def plot_simulation(self):
         time_points = np.linspace(0, self.total_time, len(self.R))
