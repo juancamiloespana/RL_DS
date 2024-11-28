@@ -61,7 +61,11 @@ class LotkaVolterraModel:
 
 # Example usage:
 P = [0.00242, 0.03012, 0.14904, 0.002] 
-P = [0.002, 0.04, 0.1, 0.0025]
+P = [0.0025, 0.03  , 0.15  , 0.002  ] ###LBFGS
+P=[0.00168234, 0.03860196, 0.14987255, 0.00205495] ###Powell
+P = [0.00198,0.04,0.15,0.002] ###powersim GE
+P = [0.00242, 0.03012, 0.14904, 0.002] 
+
 lotka_volterra_instance = LotkaVolterraModel(*P)
 result = lotka_volterra_instance.simulate()
 print(f"Average wolves over time: {result}")
