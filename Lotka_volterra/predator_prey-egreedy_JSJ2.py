@@ -45,7 +45,7 @@ Lim = [[0.0015,0.0025],[0.03,0.05],[0.05,0.15],[0.002,0.003]] # Rango de factibi
 A = len(fac) # Número de acciones posibles
 Q = np.zeros((A,A,A,A)) # Definición de la matriz Q del método K-Armed Bandid
 Dim = Q.ndim # Dimensiones
-Runs = 3000 # Corridas
+
 
 lotka_volterra_instance = LotkaVolterraModel(*P)
 R_inicial, rabbit_inicial = lotka_volterra_instance.simulate() # Solución inicial del modelo de dinámica de sistemas
@@ -63,6 +63,7 @@ y[0] = R_inicial
 corrida=[]
 data_acum=[]
 
+Runs = 3000 # Corridas
 n_episodios= 30
 
 for j in tqdm(range(n_episodios)):
@@ -158,3 +159,5 @@ plt.text(481, 45, f'% Ganancia = {round((y[Runs-1]-y[0])/y[0], 2)}')
 plt.plot(x, y)
 # function to show the plot
 plt.show()
+
+7**4

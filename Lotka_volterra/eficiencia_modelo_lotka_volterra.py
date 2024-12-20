@@ -151,3 +151,53 @@ for Runs in Runs_values:
 
 df_results = pd.DataFrame(results)
 df_results
+
+
+import pandas as pd
+import numpy as np
+
+
+df=pd.read_csv('resultados\datos_egreedy_lotka_volterra.csv')
+
+df.head()
+
+
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df["Consecutive"] = df.groupby("Episodio").cumcount()
+
+
+grouped = df.groupby("Consecutive")["R_actual"].agg(
+    mean="mean",
+    std="std",
+    count="count"
+).reset_index()
+
+# Calculate 95% Confidence Interval
+grouped["sem"] = grouped["std"] / np.sqrt(grouped["count"])  # Standard Error
+grouped["ci_upper"] = grouped["mean"] + 1.96 * grouped["sem"]  # Upper bound
+grouped["ci_lower"] = grouped["mean"] - 1.96 * grouped["sem"]  # Lower bound
+
+# Plot the Data
+plt.figure(figsize=(10, 6))
+plt.plot(grouped["Consecutive"], grouped["mean"], label="Mean", marker="", color="blue")
+plt.fill_between(
+    grouped["Consecutive"],
+    grouped["ci_lower"],
+    grouped["ci_upper"],
+    color="blue",
+    alpha=0.2,
+    label="95% Confidence Interval"
+)
+
+# Customize the Plot
+plt.title("R_actual with 95% Confidence Interval (Grouped by Consecutive)", fontsize=14)
+plt.xlabel("Consecutive", fontsize=12)
+plt.ylabel("R_actual", fontsize=12)
+plt.legend()
+plt.grid(True)
+plt.show()

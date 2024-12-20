@@ -76,3 +76,4 @@ lotka_volterra_instance.plot_simulation_fase()
 
 
 
+40000*0.01
