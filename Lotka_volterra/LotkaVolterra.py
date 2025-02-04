@@ -1,7 +1,8 @@
 # Importar libreria para calcular la media
-import numpy as np
-# Importar los graficos
+import matplotlib
+matplotlib.use('TkAgg')  # or 'Qt5Agg' for Qt-based GUI
 import matplotlib.pyplot as plt
+import numpy as np
 
 class LotkaVolterraModel:
     def __init__(self, alpha, beta, delta, gamma, initial_rabbits=100, initial_wolves=25, dt=0.01, total_time=40000):
@@ -38,7 +39,8 @@ class LotkaVolterraModel:
             self.R.append(rabbits)
             self.W.append(wolves)
 
-        return np.mean(self.L),  np.mean(self.R)
+        return np.mean(self.L)
+        # return wolves
     
     def plot_simulation(self):
         time_points = np.linspace(0, self.total_time, len(self.R))
@@ -60,20 +62,11 @@ class LotkaVolterraModel:
         plt.show()
 
 # Example usage:
-P = [0.00242, 0.03012, 0.14904, 0.002] 
-P = [0.0025, 0.03  , 0.15  , 0.002  ] ###LBFGS
-P=[0.00168234, 0.03860196, 0.14987255, 0.00205495] ###Powell
-P = [0.00198,0.04,0.15,0.002] ###powersim GE
-P = [0.00242, 0.03012, 0.14904, 0.002] 
-P= [0.0025, 0.03, 0.15, 0.002]
-lotka_volterra_instance = LotkaVolterraModel(*P)
+parameters = [0.002, 0.04, 0.1, 0.0025]
+lotka_volterra_instance = LotkaVolterraModel(*parameters)
 result = lotka_volterra_instance.simulate()
 print(f"Average wolves over time: {result}")
 
 # Grafico
-lotka_volterra_instance.plot_simulation()
-lotka_volterra_instance.plot_simulation_fase()
-
-
-
-40000*0.01
+#lotka_volterra_instance.plot_simulation()
+#lotka_volterra_instance.plot_simulation_fase()
