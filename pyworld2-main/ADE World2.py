@@ -53,16 +53,17 @@ input_file = os.path.join(os.path.dirname(__file__), "pyworld2", "functions_swit
 # TRATAMIENTOS
 tratamientos = list(itertools.product(niveles_E, niveles_fac, range(1, repeticiones+1)))
 random.shuffle(tratamientos) # Aleatorizar
-
+len(tratamientos)
 resultados = []
 
+E, fac, rep = tratamientos[0]
 # EJECUCIÓN
 for E, fac, rep in tratamientos:
     P = [0.028, 0.25, 0.8, 0.03, 0.5] #Valor inicial de los parámetros.
     Lim = [[0.02, 0.04], [0.1, 1.0], [0.6, 1.25], [0.02, 0.04], [0.1, 1.0]]  #Rango de factibilidad.
     A = len(fac)  #Número de acciones posibles.
     Q = np.zeros((A, A, A, A, A))
-    Runs = 10000
+    Runs = 100
     
     # Cargar datos iniciales
     json_data = cargar_json(input_file)
@@ -75,15 +76,22 @@ for E, fac, rep in tratamientos:
     w2_std.set_initial_state()
     w2_std.set_table_functions()
     w2_std.set_switch_functions("updated_data.json")
+    
+    st=time.time()
     w2_std.run()
+    et=time.time()
 
+    tt=et-st
+    tt
     #Recompensa inicial
     R_inicial = w2_std.aveg_ql()  
     
     # Creación de vector para graficar el retorno
     y = [R_inicial]
     
+   
     for i in range(Runs):
+        st=time.time()
         P_previo = list(P)
         
         # Cargar datos y actualizar JSON
@@ -145,7 +153,12 @@ for E, fac, rep in tratamientos:
         #Almacenar el resultado de la iteración
         y.append(R_previo)
         # Almacenar resultados
+        et=time.time()
+        tt=et-st
+        print(tt)
     resultados.append([y[-1], E, fac[-1], rep])
+ 
+
 
 # RESULTADOS
 df_resultados = pd.DataFrame(resultados, columns=['y', 'Nivel E', 'Nivel fac', 'Repetición'])
