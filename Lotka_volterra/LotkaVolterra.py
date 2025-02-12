@@ -1,6 +1,6 @@
 # Importar libreria para calcular la media
 import matplotlib
-matplotlib.use('TkAgg')  # or 'Qt5Agg' for Qt-based GUI
+#matplotlib.use('TkAgg')  # or 'Qt5Agg' for Qt-based GUI
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -62,10 +62,10 @@ class LotkaVolterraModel:
         plt.show()
 
 # Example usage:
-parameters = [0.002, 0.04, 0.1, 0.0025]
-lotka_volterra_instance = LotkaVolterraModel(*parameters)
-result = lotka_volterra_instance.simulate()
-print(f"Average wolves over time: {result}")
+# parameters = [0.002, 0.04, 0.1, 0.0025]
+# lotka_volterra_instance = LotkaVolterraModel(*parameters)
+# result = lotka_volterra_instance.simulate()
+# print(f"Average wolves over time: {result}")
 
 # Grafico
 #lotka_volterra_instance.plot_simulation()
