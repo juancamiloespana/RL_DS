@@ -13,12 +13,18 @@ std_y = df_agrupado.std()
 n = df_agrupado.count()
 
 # CALCULO DEL IC 95%
-ic_95 = 1.96 * std_y / np.sqrt(n)
+
+# Compute percentiles
+lower = df_agrupado.quantile([0.025])
+upper = df_agrupado.quantile([0.975])
+
 
 # GRÁFICO PRINCIPAL
 df_summary = pd.DataFrame({
     "mean_y": mean_y,
-    "ic_95": ic_95
+    "ic_95": ic_95,
+    "upper": upper, 
+    "lower": lower
 }).reset_index()
 
 plt.figure(figsize=(10,6))
@@ -31,8 +37,8 @@ for (idx, ((nivel_e, nivel_fac), data)) in enumerate(combinaciones):
     color = colores_disponibles[idx % len(colores_disponibles)]  # Selecciona un color cíclicamente
     colores[(nivel_e, nivel_fac)] = color  # Guarda el color para usarlo después
     plt.plot(data["Corrida"], data["mean_y"], label=f"E={nivel_e}, Fac={nivel_fac}", color=color)
-    plt.fill_between(data["Corrida"], data["mean_y"] - data["ic_95"],
-                     data["mean_y"] + data["ic_95"], alpha=0.2, color=color)
+    plt.fill_between(data["Corrida"], data["lower"], data["upper"], alpha=0.2, color=color)
+    
 
 plt.xlabel("Corrida")
 plt.ylabel("Retorno promedio (y)")
