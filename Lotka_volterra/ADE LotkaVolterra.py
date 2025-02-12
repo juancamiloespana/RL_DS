@@ -19,7 +19,7 @@ def Cumple_Limites(parametros, limites):
 # PARÁMETROS DEL EXPERIMENTO
 niveles_E = [0.1, 0.4, 0.6, 0.8]
 niveles_fac = [[-0.001, 0, 0.001], [-0.01, 0, 0.01], [-0.1, 0, 0.1]]
-repeticiones = 10
+repeticiones = 30
 
 # TRATAMIENTOS
 tratamientos = list(itertools.product(niveles_E, niveles_fac, range(1, repeticiones+1)))
@@ -76,12 +76,12 @@ for E, fac, rep in tratamientos:
         # Almacenar el resultado de la iteración
         y.append(R_previo)
 
-    # Almacenar resultados
-    resultados.append([y[-1], E, fac[-1], rep])
+        # Almacenar resultados
+        resultados.append([E, fac[-1], rep, i+1, R_previo])
 
 # RESULTADOS
-df_resultados = pd.DataFrame(resultados, columns=['y', 'Nivel E', 'Nivel fac', 'Repetición'])
-df_resultados = df_resultados.sort_values(by=['Nivel E', 'Nivel fac', 'Repetición'])
+df_resultados = pd.DataFrame(resultados, columns=['Nivel E', 'Nivel fac', 'Repetición', 'Corrida', 'y'])
+df_resultados = df_resultados.sort_values(by=['Nivel E', 'Nivel fac', 'Repetición', 'Corrida'])
 df_resultados.to_csv('Experimento_LotkaVolterra.csv', index=False)
 print(df_resultados)
 
