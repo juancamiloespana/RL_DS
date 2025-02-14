@@ -23,7 +23,6 @@ upper = df_agrupado.quantile([0.975])
 # GRÁFICO PRINCIPAL
 df_summary = pd.DataFrame({
     "mean_y": mean_y,
-    "ic_95": ic_95,
     "upper": upper, 
     "lower": lower
 }).reset_index()

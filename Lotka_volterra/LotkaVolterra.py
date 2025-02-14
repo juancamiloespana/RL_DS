@@ -70,3 +70,4 @@ class LotkaVolterraModel:
 # Grafico
 #lotka_volterra_instance.plot_simulation()
 #lotka_volterra_instance.plot_simulation_fase()
+30*1000

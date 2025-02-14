@@ -9,6 +9,7 @@ import pandas as pd
 import pyworld2
 from pyworld2.utils import plot_world_variables, plt
 import time
+from tqdm import tqdm
 
 #TIEMPO
 inicio = time.time()
@@ -43,9 +44,9 @@ def Cumple_Limites(parametros, limites):
     return True
 
 # PARÁMETROS DEL EXPERIMENTO
-niveles_E = [0.1, 0.4, 0.6, 0.8]
-niveles_fac = [[-0.001, 0, 0.001], [-0.01, 0, 0.01], [-0.1, 0, 0.1]]
-repeticiones = 30
+niveles_E = [0.6]
+niveles_fac = [ [-0.01, 0, 0.01], [-0.1, 0, 0.1]]
+repeticiones = 10
 
 # Ruta del archivo JSON
 input_file = os.path.join(os.path.dirname(__file__), "pyworld2", "functions_switch_default.json")
@@ -57,12 +58,12 @@ random.shuffle(tratamientos) # Aleatorizar
 resultados = []
 
 # EJECUCIÓN
-for E, fac, rep in tratamientos:
+for E, fac, rep in tqdm(tratamientos):
     P = [0.028, 0.25, 0.8, 0.03, 0.5] #Valor inicial de los parámetros.
     Lim = [[0.02, 0.04], [0.1, 1.0], [0.6, 1.25], [0.02, 0.04], [0.1, 1.0]]  #Rango de factibilidad.
     A = len(fac)  #Número de acciones posibles.
     Q = np.zeros((A, A, A, A, A))
-    Runs = 500
+    Runs = 700
     
     # Cargar datos iniciales
     json_data = cargar_json(input_file)
@@ -150,9 +151,24 @@ for E, fac, rep in tratamientos:
 # RESULTADOS
 df_resultados = pd.DataFrame(resultados, columns=['Nivel E', 'Nivel fac', 'Repetición', 'Corrida', 'y'])
 df_resultados = df_resultados.sort_values(by=['Nivel E', 'Nivel fac', 'Repetición', 'Corrida'])
-df_resultados.to_csv('Experimento_World2.csv', index=False)
+df_resultados.to_csv('Experimento_World2_2.csv', index=False)
 print(df_resultados)
 
 fin = time.time()
 tiempo = (fin-inicio)/60
 print(f"Tiempo total de ejecución: {tiempo:.3f} minutos")
+#Tiempo total de ejecución: 3.327 minutos
+
+#Tiempo total de ejecución: 0.631 minutos 2 CORRIDAS 2 REPETICIONES
+#Tiempo total de ejecución: 0.682 minutos A100 gpu
+# Tiempo total de ejecución: 0.485 minutos cpu
+#Tiempo total de ejecución: 0.706 minutos L4
+# Tiempo total de ejecución: 0.628 minutos T4 GPU
+# Tiempo total de ejecución: 0.590 minutos v2-8 TPU
+#Tiempo total de ejecución: 0.438 minutos
+#Tiempo total de ejecución: 0.211 minutos
+ 
+# Tiempo total de ejecución: 0.303 minutos reducido
+#Tiempo total de ejecución: 0.209 minutos reducido v5e-1 TPU
+
+
