@@ -1,49 +1,67 @@
 import pandas as pd
 import numpy as np
+import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 
-# CARGAR EL ARCHIVO
-archivo = "Experimento_LotkaVolterra.csv"  
+# Load the CSV file into a DataFrame
+archivo = "Experimento_LotkaVolterra.csv"
 df = pd.read_csv(archivo, delimiter=",")
 
-# AGRUPAR DATOS Y CALCULAR LOS DATOS PARA EL IC
+# Group data by 'Nivel E', 'Nivel fac', and 'Corrida' and calculate mean, std, and count
 df_agrupado = df.groupby(["Nivel E", "Nivel fac", "Corrida"])["y"]
-mean_y = df_agrupado.mean()
-std_y = df_agrupado.std()
-n = df_agrupado.count()
+mean_y = df_agrupado.mean()  # Calculate mean for each group
+lower = df_agrupado.quantile(0.025)  # Calculate the 2.5th percentile
+upper = df_agrupado.quantile(0.975)  # Calculate the 97.5th percentile
 
-
-# CALCULO DEL IC 95%
-
-# Compute percentiles
-lower = df_agrupado.quantile([0.025])
-upper = df_agrupado.quantile([0.975])
-
-
-# GRÁFICO PRINCIPAL
+# Create a summary DataFrame with mean and confidence intervals
 df_summary = pd.DataFrame({
     "mean_y": mean_y,
-    "upper": upper, 
+    "upper": upper,
     "lower": lower
 }).reset_index()
 
-plt.figure(figsize=(10,6))
+# Define colors from Matplotlib
+mpl_colors = plt.get_cmap("tab10").colors + plt.get_cmap("Set3").colors  # 10 + 12 colors
+rgba_colors = [f'rgba({int(r*255)},{int(g*255)},{int(b*255)},0.2)' for r, g, b in mpl_colors]
+line_colors = [f'rgb({int(r*255)},{int(g*255)},{int(b*255)})' for r, g, b in mpl_colors]
 
-combinaciones = df_summary.groupby(["Nivel E", "Nivel fac"])
+# Create an interactive plot using Plotly with confidence intervals
+fig = go.Figure()
+color_index = 0
 
-for (nivel_e, nivel_fac), data in combinaciones: 
-    plt.plot(data["Corrida"], data["mean_y"], label=f"E={nivel_e}, Fac={nivel_fac}")
-    plt.fill_between(data["Corrida"], data["lower"], data["upper"], alpha=0.2, color=color)
+# Add traces for each group with confidence intervals
+for (nivel_e, nivel_fac), group_data in df_summary.groupby(["Nivel E", "Nivel fac"]):
+    group_name = f"E={nivel_e}, Fac={nivel_fac}"
+    color = rgba_colors[color_index % len(rgba_colors)]
+    line_color = line_colors[color_index % len(line_colors)]
+    color_index += 1
 
-plt.xlabel("Corrida")
-plt.ylabel("Retorno promedio (y)")
-plt.title("GRÁFICO RENDIMIENTO IC 95%")
-max_corrida = df_summary["Corrida"].max()
-num_xticks = int(max_corrida/100)
-plt.xticks(np.linspace(1, max_corrida, num=num_xticks, dtype=int))
-num_yticks = 10 
-y_min, y_max = df_summary["mean_y"].min(), df_summary["mean_y"].max()
-plt.yticks(np.linspace(y_min, y_max, num=num_yticks))
-plt.legend(title="Exploración, Paso", loc="upper left", fontsize=10, frameon=True, framealpha=0.3)
-plt.grid(True)
-plt.show()
+    # Add confidence interval as a filled area
+    fig.add_trace(go.Scatter(
+        x=group_data["Corrida"].tolist() + group_data["Corrida"].tolist()[::-1],
+        y=group_data["upper"].tolist() + group_data["lower"].tolist()[::-1],
+        fill='toself', fillcolor=color,
+        line=dict(color='rgba(255,255,255,0)'),
+        showlegend=False,
+        legendgroup=group_name
+    ))
+
+    # Add the main line plot
+    fig.add_trace(go.Scatter(
+        x=group_data["Corrida"], y=group_data["mean_y"],
+        mode='lines', name=group_name,
+        line=dict(width=2, color=line_color),
+        legendgroup=group_name
+    ))
+
+# Customize the layout
+fig.update_layout(
+    title="Performance Chart with 95% Confidence Intervals",
+    xaxis_title="Run",
+    yaxis_title="Average Return (y)",
+    legend_title="Exploration and Step",
+    template="plotly_white"
+)
+
+# Show the interactive plot
+fig.show()
