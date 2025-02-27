@@ -13,7 +13,7 @@ import os
 from tqdm import tqdm
 
 # Funcion para cambiar el archivo JSON data para el World2
-def update_json(data, brn1, nrun1, fc1, cign1, poln):
+def update_json(data, brn1, nrun1, fc1, cidn1, poln):
     for entry in data:
         if "BRN1" in entry:
             entry["BRN1"] = brn1 # BRN - Birth Rate Normal [fraction/year] Base run 0.028
@@ -24,7 +24,7 @@ def update_json(data, brn1, nrun1, fc1, cign1, poln):
         elif "FC1" in entry:
             entry["FC1"] = fc1 # FC - Food Coefficient [] Base run 0.8
         elif "CIDN1" in entry:
-            entry["CIDN1"] = cign1 # CIDN - Capital-Investment Discard Normal [fraction/year] Base run 0.03
+            entry["CIDN1"] = cidn1 # CIDN - Capital-Investment Discard Normal [fraction/year] Base run 0.03
     return data
 
 # Funcion del e-greedy
