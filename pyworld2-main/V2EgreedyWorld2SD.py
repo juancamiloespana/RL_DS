@@ -7,6 +7,7 @@ import os
 import pyworld2
 from pyworld2.utils import plot_world_variables, plt
 import time
+from tqdm import tqdm
 
 
 # FUNCIONES
@@ -28,8 +29,8 @@ def update_json(data, brn1, nrun1, fc1, cign1, poln):
             entry["POLN"] = poln # Pollution Normal [pollution units/person/year].
         elif "FC1" in entry:
             entry["FC1"] = fc1 # FC - Food Coefficient [] Base run 0.8
-        elif "CIGN1" in entry:
-            entry["CIGN1"] = cign1 # CIDN - Capital-Investment Discard Normal [fraction/year] Base run 0.03
+        elif "CIDN1" in entry:
+            entry["CIDN1"] = cign1 # CIDN - Capital-Investment Discard Normal [fraction/year] Base run 0.03
     return data
 
 def Cumple_Limites(parametros, limites):
@@ -71,7 +72,7 @@ print("Recompensa inicial =", round(R_inicial, 5))
 y = [R_inicial]
 
 # Proceso de explorar-explotar
-for i in range(Runs):
+for i in tqdm(range(Runs)):
     P_previo = list(P)  # Guardar el valor de P previo
 
     # Cargar datos y actualizar JSON

@@ -212,6 +212,7 @@ class World2:
         self.year_min = year_min
         self.year_max = year_max
         self.dt = dt
+
         self.time = np.arange(self.year_min, self.year_max + self.dt, self.dt)
         self.n = self.time.size
 
@@ -504,7 +505,7 @@ class World2:
                       self.qlp(self.polr[k]))
 
 
-def hello_world2():
+def hello_world2(scenario = "functions_switch_scenario_2"):
     """
     This example runs and plots the 2 scenarios from the book World Dynamics
     by Jay W. Forrester:
@@ -521,17 +522,25 @@ def hello_world2():
     w2_std.set_table_functions()
     w2_std.set_switch_functions()
     w2_std.run()
+    print("estandar")
+    print(w2_std.aveg_ql())
+    print(w2_std.brn(1900))
+    print(w2_std.brn(1970))
 
     # scenario: Reduced Usage if Natural Resource
     w2_nr = World2()
     w2_nr.set_state_variables()
     w2_nr.set_initial_state()
     w2_nr.set_table_functions()
-    fname_nr = "../examples/scenarios/functions_switch_scenario_2.json"
+    
+    fname_nr = f"../examples/scenarios/{scenario}.json"
     json_file = os.path.join(os.path.dirname(__file__),
                              fname_nr.replace("/", os.sep))
     w2_nr.set_switch_functions(json_file)
     w2_nr.run()
+    print(w2_nr.aveg_ql())
+    print(w2_nr.brn(1900))
+    print(w2_nr.brn(1970))
 
     # plotting
     title_std = "World2 scenario - standard run"
@@ -554,3 +563,5 @@ def hello_world2():
 
 if __name__ == "__main__":
     hello_world2()
+
+

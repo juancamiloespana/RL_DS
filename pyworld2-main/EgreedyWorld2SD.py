@@ -10,6 +10,7 @@ import numpy as np
 import pyworld2
 from pyworld2.utils import plot_world_variables, plt
 import os
+from tqdm import tqdm
 
 # Funcion para cambiar el archivo JSON data para el World2
 def update_json(data, brn1, nrun1, fc1, cign1, poln):
@@ -22,8 +23,8 @@ def update_json(data, brn1, nrun1, fc1, cign1, poln):
             entry["POLN"] = poln # Pollution Normal [pollution units/person/year].
         elif "FC1" in entry:
             entry["FC1"] = fc1 # FC - Food Coefficient [] Base run 0.8
-        elif "CIGN1" in entry:
-            entry["CIGN1"] = cign1 # CIDN - Capital-Investment Discard Normal [fraction/year] Base run 0.03
+        elif "CIDN1" in entry:
+            entry["CIDN1"] = cign1 # CIDN - Capital-Investment Discard Normal [fraction/year] Base run 0.03
     return data
 
 # Funcion del e-greedy
@@ -91,7 +92,7 @@ y[0] = R_inicial
 ejecucion = Runs/10
 
 # Proceso de explorar - explotar
-for i in range(Runs):
+for i in tqdm(range(Runs)):
 
     P_previo = list(P) # Guardo el valor de P previo
 
