@@ -18,8 +18,8 @@ def update_json(data, brn1, nrun1, fc1, cign1, poln):
             entry["POLN"] = poln # Pollution Normal [pollution units/person/year].
         elif "FC1" in entry:
             entry["FC1"] = fc1 # FC - Food Coefficient [] Base run 0.8
-        elif "CIDN1" in entry:
-            entry["CIDN1"] = cign1 # CIDN - Capital-Investment Discard Normal [fraction/year] Base run 0.03
+        elif "CIGN1" in entry:
+            entry["CIGN1"] = cign1 # CIDN - Capital-Investment Discard Normal [fraction/year] Base run 0.03
     return data
 
 
