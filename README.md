@@ -31,18 +31,11 @@ RL_SD/
 │   └── timing.py                 # Performance timing analysis
 │
 ├── models/                       # System dynamics models
-│   ├── pyworld2/                 # World2 implementation
-│   ├── LotkaVolterra.py          # Lotka–Volterra equations
-│   ├── run_scenarios.py          # Scenario execution framework
-│   ├── setup.py                  # Model configuration
-│   ├── updated_data.json         # Model parameters
-│   ├── world2_switch.py          # World2 model variants
-│   └── World2Lab.py              # World2 laboratory interface
-│
-├── results/                      # Experimental outputs and performance logs
+│   ├── pyworld2/                 # World2 model
+│   ├── LotkaVolterra.py          # Lotka–Volterra model
 │
 ├── requirements.txt              # Python dependencies
-└── README.md                     # Project documentation
+└── README.md                     # Project documentation (this file)
 ```
 ---
 
@@ -116,7 +109,6 @@ All experiment outputs are automatically saved in the root directory of the proj
 
 **Purpose:** Contains raw experimental data for all treatment combinations, enabling reproducibility and further statistical analysis.
 
----
 
 ### **2. Execution Time Statistics**
 **File:** `[Experiment_Name]_Timing_Statistics.csv`
@@ -131,7 +123,6 @@ All experiment outputs are automatically saved in the root directory of the proj
 
 **Purpose:** Performance benchmarking across different hyperparameter configurations.
 
----
 
 ##### **3. Learning Curve Visualizations**
 **Format:** Interactive HTML plots (Plotly)
